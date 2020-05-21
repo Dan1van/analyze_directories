@@ -17,9 +17,8 @@ def is_verb(word):
     return pos_info[0][1] == 'VB'
 
 
-def get_trees(path, with_filenames=False, with_file_content=False):
+def get_files(path):
     filenames = []
-    trees = []
     for dirname, dirs, files in os.walk(path, topdown=True):
         for file in files:
             if file.endswith('.py'):
@@ -27,6 +26,12 @@ def get_trees(path, with_filenames=False, with_file_content=False):
                 if len(filenames) == 100:
                     break
     print(f'total {len(filenames)} files')
+    return filenames
+
+
+def get_trees(path):
+    filenames = get_files(path)
+    trees = []
     for filename in filenames:
         with open(filename, 'r', encoding='utf-8') as attempt_handler:
             main_file_content = attempt_handler.read()
@@ -35,13 +40,6 @@ def get_trees(path, with_filenames=False, with_file_content=False):
         except SyntaxError as e:
             print(e)
             tree = None
-        if with_filenames:
-            if with_file_content:
-                trees.append((filename, main_file_content, tree))
-            else:
-                trees.append((filename, tree))
-        else:
-            trees.append(tree)
     print('trees generated')
     return trees
 
